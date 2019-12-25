@@ -9,7 +9,9 @@ namespace Test
     {
         static async Task Main(string[] args)
         {
-            Uri uri = new Uri("http://WWW.baidu.com");
+            
+            HttpWebRequest
+               Uri uri = new Uri("http://WWW.baidu.com");
             var http = await HttpManager.GetRequest(uri);
         }
     }
