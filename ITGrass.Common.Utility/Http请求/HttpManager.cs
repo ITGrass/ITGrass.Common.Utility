@@ -9,11 +9,11 @@ namespace ITGrass.Common.Utility.Http请求
 {
     public static class HttpManager
     {
-        private static readonly HttpClient HttpClient;
+        private static readonly HttpClient _httpClient;
 
         static HttpManager()
         {
-            HttpClient = new HttpClient();
+            _httpClient = new HttpClient();
         }
 
         /// <summary>
@@ -21,36 +21,82 @@ namespace ITGrass.Common.Utility.Http请求
         /// </summary>
         /// <param name="uri">url地址</param>
         /// <returns></returns>
-        public static async Task<HttpResponseMessage> GetRequest(Uri uri)
+        public static async Task<HttpResponseMessage> Get(Uri uri)
         {
-            return await HttpClient.GetAsync(uri);
+            return await _httpClient.GetAsync(uri);
         }
+
+
 
         /// <summary>
-        /// Get请求(带取消操作)
+        /// Get请求
         /// </summary>
-        /// <param name="uri">地址</param>
-        /// <param name="token">取消标记</param>
+        /// <param name="url">地址</param>
+        /// <param name="headers">请求头信息</param>
         /// <returns></returns>
-        public static async Task<HttpResponseMessage> GetRequest(Uri uri, CancellationToken token)
+        public static async Task<HttpResponseMessage> Get(string url, List<KeyValuePair<string, string>> headers = null)
         {
-            return await HttpClient.GetAsync(uri, token);
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri(url),
+                Method = HttpMethod.Get,
+            };
+            if (headers != null && headers.Count > 0)
+            {
+                request.Headers.Clear();
+
+                foreach (var header in headers)
+                {
+                    request.Headers.Add(header.Key, header.Value);
+
+                }
+            }
+            return await _httpClient.SendAsync(request);
         }
 
-        public static async Task<string> GetRequest(string url)
-        {
-            return await HttpClient.GetStringAsync(url);
-        }
+
 
         /// <summary>
-        /// post请求
+        /// post 请求
         /// </summary>
-        /// <param name="uri">地址</param>
-        /// <param name="parms">参数</param>
+        /// <param name="url">地址</param>
+        /// <param name="paramList">参数</param>
+        /// <param name="headers">头信息</param>
         /// <returns></returns>
-        public static async Task<HttpResponseMessage> PostRequest(Uri uri, IEnumerable<KeyValuePair<string, string>> parms)
+        public static async Task<HttpResponseMessage> PostAsync(string url, List<KeyValuePair<String, String>> paramList, List<KeyValuePair<string, string>> headers = null)
         {
-            return await HttpClient.PostAsync(uri, new FormUrlEncodedContent(parms));
+            FormUrlEncodedContent formUrlEncodedContent = new FormUrlEncodedContent(paramList);
+            if (headers != null && headers.Count > 0)
+            {
+                formUrlEncodedContent.Headers.Clear();
+                foreach (var header in headers)
+                {
+                    formUrlEncodedContent.Headers.Add(header.Key, header.Value);
+                }
+            }
+            return await _httpClient.PostAsync(new Uri(url), formUrlEncodedContent);
+
+        }
+
+
+        /// <summary>
+        /// Post方法请求 raw data
+        /// </summary>
+        /// <param name="url">请求地址</param>
+        /// <param name="content">raw data</param>
+        /// <returns></returns>
+        public static async Task<HttpResponseMessage> PostAsync(string url, string content, List<KeyValuePair<string, string>> headers = null)
+        {
+            StringContent stringContent = new StringContent(content, Encoding.UTF8);
+            if (headers != null && headers.Count > 0)
+            {
+                stringContent.Headers.Clear();
+                foreach (var header in headers)
+                {
+                    stringContent.Headers.Add(header.Key, header.Value);
+                }
+            }
+            return await _httpClient.PostAsync(new Uri(url), stringContent);
         }
     }
 }
