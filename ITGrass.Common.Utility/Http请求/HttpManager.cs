@@ -34,7 +34,7 @@ namespace ITGrass.Common.Utility.Http请求
         /// <param name="url">地址</param>
         /// <param name="headers">请求头信息</param>
         /// <returns></returns>
-        public static async Task<HttpResponseMessage> Get(string url, List<KeyValuePair<string, string>> headers = null)
+        public static async Task<HttpResponseMessage> GetSync(string url, List<KeyValuePair<string, string>> headers = null)
         {
             HttpRequestMessage request = new HttpRequestMessage()
             {
@@ -54,28 +54,24 @@ namespace ITGrass.Common.Utility.Http请求
             return await _httpClient.SendAsync(request);
         }
 
-
-
-        /// <summary>
-        /// post 请求
-        /// </summary>
-        /// <param name="url">地址</param>
-        /// <param name="paramList">参数</param>
-        /// <param name="headers">头信息</param>
-        /// <returns></returns>
-        public static async Task<HttpResponseMessage> PostAsync(string url, List<KeyValuePair<String, String>> paramList, List<KeyValuePair<string, string>> headers = null)
+        public static HttpResponseMessage Get(string url, List<KeyValuePair<string, string>> headers = null)
         {
-            FormUrlEncodedContent formUrlEncodedContent = new FormUrlEncodedContent(paramList);
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri(url),
+                Method = HttpMethod.Get,
+            };
             if (headers != null && headers.Count > 0)
             {
-                formUrlEncodedContent.Headers.Clear();
+                request.Headers.Clear();
+
                 foreach (var header in headers)
                 {
-                    formUrlEncodedContent.Headers.Add(header.Key, header.Value);
+                    request.Headers.Add(header.Key, header.Value);
+
                 }
             }
-            return await _httpClient.PostAsync(new Uri(url), formUrlEncodedContent);
-
+            return _httpClient.SendAsync(request).Result;
         }
 
 
@@ -97,6 +93,26 @@ namespace ITGrass.Common.Utility.Http请求
                 }
             }
             return await _httpClient.PostAsync(new Uri(url), stringContent);
+        }
+
+        /// <summary>
+        /// Post方法请求 raw data
+        /// </summary>
+        /// <param name="url">请求地址</param>
+        /// <param name="content">raw data</param>
+        /// <returns></returns>
+        public static HttpResponseMessage Post(string url, string content, List<KeyValuePair<string, string>> headers = null)
+        {
+            StringContent stringContent = new StringContent(content, Encoding.UTF8);
+            if (headers != null && headers.Count > 0)
+            {
+                stringContent.Headers.Clear();
+                foreach (var header in headers)
+                {
+                    stringContent.Headers.Add(header.Key, header.Value);
+                }
+            }
+            return _httpClient.PostAsync(new Uri(url), stringContent).Result;
         }
     }
 }
