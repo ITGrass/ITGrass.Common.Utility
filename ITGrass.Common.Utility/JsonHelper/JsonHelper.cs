@@ -17,7 +17,7 @@ namespace ITGrass.Common.Utility.JsonHelper
             return string.Empty;
         }
 
-        public static T toObject<T>(this string str)
+        public static T toObject<T>(this string str) 
         {
             if (string.IsNullOrEmpty(str))
             {
