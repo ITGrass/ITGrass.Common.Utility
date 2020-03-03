@@ -9,11 +9,11 @@ namespace ITGrass.Common.Utility.Http请求
 {
     public static class HttpManager
     {
-        private static readonly HttpClient _httpClient;
+        private static readonly HttpClient HttpClient;
 
         static HttpManager()
         {
-            _httpClient = new HttpClient();
+            HttpClient = new HttpClient();
         }
 
         /// <summary>
@@ -23,7 +23,7 @@ namespace ITGrass.Common.Utility.Http请求
         /// <returns></returns>
         public static async Task<HttpResponseMessage> Get(Uri uri)
         {
-            return await _httpClient.GetAsync(uri);
+            return await HttpClient.GetAsync(uri);
         }
 
 
@@ -51,7 +51,7 @@ namespace ITGrass.Common.Utility.Http请求
 
                 }
             }
-            return await _httpClient.SendAsync(request);
+            return await HttpClient.SendAsync(request);
         }
 
 
@@ -74,7 +74,7 @@ namespace ITGrass.Common.Utility.Http请求
                     formUrlEncodedContent.Headers.Add(header.Key, header.Value);
                 }
             }
-            return await _httpClient.PostAsync(new Uri(url), formUrlEncodedContent);
+            return await HttpClient.PostAsync(new Uri(url), formUrlEncodedContent);
 
         }
 
@@ -96,7 +96,7 @@ namespace ITGrass.Common.Utility.Http请求
                     stringContent.Headers.Add(header.Key, header.Value);
                 }
             }
-            return await _httpClient.PostAsync(new Uri(url), stringContent);
+            return await HttpClient.PostAsync(new Uri(url), stringContent);
         }
     }
 }
